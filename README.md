@@ -1,6 +1,11 @@
-# ETA
+# Simple ETA
 _Progressively determine the eta of a process out of the percentage reported._<br/>
 _Everything is customizable, no need to define checkpoints or any other shenanigans_
+
+# Install
+```
+npm i simple-eta
+```
 
 ## Constructor
 - min `{number=0}` - define the lower limit of your interval
