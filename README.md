@@ -1,5 +1,5 @@
 # ETA
-_Progressively determine the eta of a process out of the percentage reported._
+_Progressively determine the eta of a process out of the percentage reported._<br/>
 _Everything is customizable, no need to define checkpoints or any other shenanigans_
 
 ## Constructor
@@ -13,16 +13,16 @@ _Everything is customizable, no need to define checkpoints or any other shenanig
 ## Methods
 
 ### `.start():void`
-Add the first point to the history.
+Add the first point to the history.<br/>
 Automatically called if `autostart` is `true`
 
 ### `.reset():void`
 Resets the history of the ETA.
 
 ### `.report(number):void`
-Report the progress within the defined interval, adding a point to the history.
+Report the progress within the defined interval, adding a point to the history.<br/>
 Values outside the interval will produce false results.
 
 ### `.estimate():number`
-Estimates the time left from the last `.report` call to complete the interval.
+Estimates the time left from the last `.report` call to complete the interval.<br/>
 Time is returned in seconds.
