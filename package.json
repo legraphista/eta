@@ -1,10 +1,21 @@
 {
-  "name": "eta",
+  "name": "@legraphista/eta",
   "version": "1.0.0",
   "description": "Progressively determine the eta of a process out of the percentage reported.",
   "main": "index.js",
   "repository": "git@github.com:legraphista/eta.git",
   "author": "Stefan-Gabriel Muscalu <stefan.gabriel.muscalu@gmail.com>",
   "license": "MIT",
-  "private": false
+  "private": false,
+  "keywords": [
+    "progress",
+    "eta",
+    "progress eta",
+    "progress-eta",
+    "estimate",
+    "estimated",
+    "time",
+    "estimated time",
+    "estimated-time"
+  ]
 }
