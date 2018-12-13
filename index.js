@@ -30,7 +30,7 @@ function makeEta(options) {
     }
   }
 
-  function report(progress, timestamp = Date.now()) {
+  function report(progress, timestamp) {
     if (typeof timestamp !== 'number') {
       timestamp = Date.now();
     }
