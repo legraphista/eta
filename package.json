@@ -1,6 +1,6 @@
 {
   "name": "simple-eta",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Progressively determine the eta of a process out of the percentage reported.",
   "main": "index.js",
   "repository": "git@github.com:legraphista/eta.git",

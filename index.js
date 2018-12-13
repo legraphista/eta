@@ -1,58 +1,80 @@
-const CappedArray = require('./capped-array');
+function makeEta(options) {
+  options = options || {};
+  var max = options.max || 1;
+  var min = options.min || 0;
+  var historyLimit = options.history || 100;
+  var autostart = options.autostart || true;
 
-class ETA {
-  constructor({ max = 1, min = 0, history = 100, autostart = true } = {}) {
+  var lastTimestamp = null, lastProgress = null;
 
-    this._max = max;
-    this._min = min;
-    this._historyLen = history;
-    this._autostart = autostart;
+  var history = []; // Circular buffer
+  var historyIndex = 0;
 
-    this.reset();
+  function _pushHistory(item) {
+    history[historyIndex] = item;
+    historyIndex += 1;
+    if (historyIndex >= historyLimit) { historyIndex = 0; }
   }
 
-  start() {
-    this._history.push({ when: Date.now(), val: this._min });
+  function start() {
+    report(min);
   }
 
-  reset() {
-    this._history = new CappedArray({ length: this._historyLen });
-    if (this._autostart) {
-      this.start();
+  function reset() {
+    history.length = 0;
+    historyIndex = 0;
+    lastTimestamp = null;
+    lastProgress = null;
+    if (autostart) {
+      start();
     }
   }
 
-  report(progress) {
-    this._history.push({ when: Date.now(), val: progress });
-  }
-
-  estimate() {
-    const interval = this._max - this._min;
-    const intervalLeft = interval - (this._history.last.val - this._min);
-
-    const timesPerUnit = [];
-    for (let i = 1; i < this._history.length; i++) {
-      const last = this._history.get(i - 1);
-      const current = this._history.get(i);
-
-      const timeInterval = (current.when - last.when) / 1000;
-      const valInterval = (current.val - last.val) / interval;
-
-      const timePerUnit = timeInterval / valInterval;
-
-      if (timePerUnit !== Infinity && timePerUnit > 0 && !isNaN(timePerUnit)) {
-        timesPerUnit.push(timePerUnit);
-      }
+  function report(progress, timestamp = Date.now()) {
+    if (typeof timestamp !== 'number') {
+      timestamp = Date.now();
     }
 
-    if (timesPerUnit.length === 0) {
+    if (lastTimestamp !== null && lastProgress !== null) {
+      var deltaProgress = progress - lastProgress;
+      var deltaTimestamp = timestamp - lastTimestamp;
+      _pushHistory({ time: deltaTimestamp, progress: deltaProgress });
+    }
+
+    lastProgress = progress;
+    lastTimestamp = timestamp;
+  }
+
+  function estimate() {
+    if (lastProgress === null) {
       return Infinity;
     }
 
-    const avgTimePerUnit = timesPerUnit.reduce((a, c) => a + c, 0) / timesPerUnit.length;
+    var totalProgress = 0;
+    var totalTime = 0;
 
-    return intervalLeft * avgTimePerUnit / interval;
+    for (var i = 0; i < history.length; i++) {
+      var item = history[i];
+      var progress = item.progress;
+      var time = item.time;
+      if (progress >= 0) {
+        totalProgress += progress;
+        totalTime += time;
+      }
+    }
+
+    if (totalProgress === 0) { return Infinity; }
+
+    var progressLeft = max - lastProgress;
+    return totalTime * 0.001 * (progressLeft / totalProgress);
+  }
+
+  return {
+    start: start,
+    reset: reset,
+    report: report,
+    estimate: estimate,
   }
 }
 
-module.exports = ETA;
+module.exports = makeEta;
