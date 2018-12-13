@@ -1,3 +1,5 @@
+// @flow
+
 const makeEta = require('.');
 
 const MIN = 100;

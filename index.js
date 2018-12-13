@@ -1,4 +1,15 @@
-function makeEta(options) {
+// @flow
+
+/*::
+type Options = {
+  max?: number,
+  min?: number,
+  history?: number,
+  autostart?: number,
+}
+*/
+
+function makeEta(options/*::?: Options */) {
   options = options || {};
   var max = options.max || 1;
   var min = options.min || 0;
@@ -30,7 +41,7 @@ function makeEta(options) {
     }
   }
 
-  function report(progress, timestamp) {
+  function report(progress /*: number */, timestamp/*::?: number */) {
     if (typeof timestamp !== 'number') {
       timestamp = Date.now();
     }
