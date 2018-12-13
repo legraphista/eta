@@ -1,4 +1,6 @@
-const ETA = require('.');
+// @flow
+
+const makeEta = require('.');
 
 const MIN = 100;
 const MAX = 200;
@@ -8,7 +10,7 @@ const TIME = 10; // seconds
 const DELAY = TIME / ITER * 1000;
 const MAX_HISTORY = 100; // or Infinity ¯\_(ツ)_/¯
 
-const eta = new ETA({
+const eta = makeEta({
   min: MIN,
   max: MAX,
   history: MAX_HISTORY
