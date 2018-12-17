@@ -14,7 +14,7 @@ function makeEta(options/*::?: Options */) {
   var max = options.max || 1;
   var min = options.min || 0;
   var historyLimit = options.history || 100;
-  var autostart = options.autostart || true;
+  var autostart = typeof options.autostart !== 'undefined' ? options.autostart : true;
 
   var lastTimestamp = null, lastProgress = null;
 
