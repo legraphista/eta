@@ -22,8 +22,8 @@ class ETA {
     }
   }
 
-  report(progress) {
-    this._history.push({ when: Date.now(), val: progress });
+  report(progress, time = Date.now()) {
+    this._history.push({ when: time, val: progress });
   }
 
   estimate() {
