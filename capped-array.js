@@ -1,14 +1,16 @@
 class CappedArray {
   constructor({ length = Infinity }) {
-    this._arr = [];
+    this._arr = new Array(length);
+    this._index = 0;
+    this._len = 0;
     this._max = length;
   }
 
   _push(val) {
-    this._arr.push(val);
-    if (this._max < this._arr.length) {
-      this._arr.shift();
-    }
+    this._arr[this._index] = val;
+    this._len = Math.max(this._len, this._index + 1);
+
+    this._index = (this._index + 1) % this._max;
   }
 
   push(...values) {
@@ -18,11 +20,11 @@ class CappedArray {
   }
 
   get last() {
-    return this._arr[this._arr.length - 1];
+    return this._arr[this._index === 0 ? this._len - 1 : this._index - 1];
   }
 
   get length() {
-    return this._arr.length;
+    return this._len;
   }
 
   get(i) {
