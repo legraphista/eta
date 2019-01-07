@@ -1,6 +1,6 @@
 {
   "name": "simple-eta",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "Progressively determine the eta of a process out of the percentage reported.",
   "main": "index.js",
   "scripts": {
