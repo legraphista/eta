@@ -46,7 +46,7 @@ function makeEta(options/*::?: Options */) {
       timestamp = Date.now();
     }
 
-    if (lastTimestamp !== null && lastProgress !== null) {
+    if (lastProgress !== progress && lastTimestamp !== null && lastProgress !== null) {
       var deltaProgress = progress - lastProgress;
       var deltaTimestamp = timestamp - lastTimestamp;
       _pushHistory({ time: deltaTimestamp, progress: deltaProgress });
