@@ -5,7 +5,7 @@ type Options = {
   max?: number,
   min?: number,
   history?: number,
-  autostart?: number,
+  autostart?: boolean,
 }
 */
 
