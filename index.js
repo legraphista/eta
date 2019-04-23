@@ -4,36 +4,40 @@
 type Options = {
   max?: number,
   min?: number,
-  history?: number,
+  historyTimeConstant?: number,
   autostart?: boolean,
 }
 */
 
+function makeLowPassFilter(RC/*: number*/) {
+  return function (previousOutput, input, dt) {
+    const alpha = dt / (dt + RC);
+    return previousOutput + alpha * (input - previousOutput);
+  }
+}
+
+function def/*:: <T>*/(x/*: ?T*/, d/*: T*/)/*: T*/ {
+  return (x === undefined || x === null) ? d : x;
+}
+
 function makeEta(options/*::?: Options */) {
   options = options || {};
-  var max = options.max || 1;
-  var min = options.min || 0;
-  var historyLimit = options.history || 100;
-  var autostart = typeof options.autostart !== 'undefined' ? options.autostart : true;
+  var max = def(options.max, 1);
+  var min = def(options.min, 0);
+  var autostart = def(options.autostart, true);
 
-  var lastTimestamp = null, lastProgress = null;
+  var rate/*: number | null */ = null;
+  var lastTimestamp/*: number | null */ = null;
+  var lastProgress/*: number | null */ = null;
 
-  var history = []; // Circular buffer
-  var historyIndex = 0;
-
-  function _pushHistory(item) {
-    history[historyIndex] = item;
-    historyIndex += 1;
-    if (historyIndex >= historyLimit) { historyIndex = 0; }
-  }
+  var filter = makeLowPassFilter(def(options.historyTimeConstant, 2.5));
 
   function start() {
     report(min);
   }
 
   function reset() {
-    history.length = 0;
-    historyIndex = 0;
+    rate = null;
     lastTimestamp = null;
     lastProgress = null;
     if (autostart) {
@@ -46,38 +50,39 @@ function makeEta(options/*::?: Options */) {
       timestamp = Date.now();
     }
 
-    if (lastProgress !== progress && lastTimestamp !== null && lastProgress !== null) {
-      var deltaProgress = progress - lastProgress;
-      var deltaTimestamp = timestamp - lastTimestamp;
-      _pushHistory({ time: deltaTimestamp, progress: deltaProgress });
+    if (progress === lastProgress) { return; }
+
+    if (lastTimestamp === null || lastProgress === null) {
+      lastProgress = progress
+      lastTimestamp = timestamp
+      return;
     }
 
-    lastProgress = progress;
-    lastTimestamp = timestamp;
+    var deltaProgress = progress - lastProgress;
+    var deltaTimestamp = 0.001 * (timestamp - lastTimestamp);
+    var currentRate = deltaProgress / deltaTimestamp;
+
+    rate = rate === null
+      ? currentRate
+      : filter(rate, currentRate, deltaTimestamp);
+    lastProgress = progress
+    lastTimestamp = timestamp
   }
 
-  function estimate() {
-    if (lastProgress === null) {
-      return Infinity;
+  function estimate(timestamp/*::?: number*/) {
+    if (lastProgress === null) { return Infinity; }
+    if (lastProgress >= max) { return 0; }
+    if (rate === null) { return Infinity; }
+
+    var estimatedTime = (max - lastProgress) / rate;
+    if (typeof timestamp === 'number' && typeof lastTimestamp === 'number') {
+      estimatedTime -= (timestamp - lastTimestamp) * 0.001;
     }
+    return Math.max(0, estimatedTime);
+  }
 
-    var totalProgress = 0;
-    var totalTime = 0;
-
-    for (var i = 0; i < history.length; i++) {
-      var item = history[i];
-      var progress = item.progress;
-      var time = item.time;
-      if (progress >= 0) {
-        totalProgress += progress;
-        totalTime += time;
-      }
-    }
-
-    if (totalProgress === 0) { return Infinity; }
-
-    var progressLeft = max - lastProgress;
-    return totalTime * 0.001 * (progressLeft / totalProgress);
+  function getRate() {
+    return rate === null ? 0 : rate;
   }
 
   return {
@@ -85,6 +90,7 @@ function makeEta(options/*::?: Options */) {
     reset: reset,
     report: report,
     estimate: estimate,
+    rate: getRate,
   }
 }
 
