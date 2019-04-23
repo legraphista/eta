@@ -23,9 +23,9 @@ for (let progress = 1; progress <= 100; i += 1) {
 ## Constructor
 - min `{number=0}` - define the lower limit of your interval
 - max `{number=1}` - define the upper limit of your interval
-- history `{number=100}` - define how many points of historical data to use
-    - `higher history value`: more accurate and time stable
-    - `lower  history value`: more adaptive and less memory
+- historyTimeConstant `{number=2.5}` - define (in seconds) how far into the past to consider data points as still relevant
+    - `higher history value`: more time stable. spikes in progress speed will affect ETA less
+    - `lower  history value`: more adaptive to changes. spikes in progress speed will affect ETA more
 - autostart `{boolean=true}` - add the first history point when the class is instantiated or reset
 
 ## Methods
@@ -44,3 +44,6 @@ Values outside the interval will produce false results.
 ### `.estimate():number`
 Estimates the time left from the last `.report` call to complete the interval.<br/>
 Time is returned in seconds. Returns `Infinity` when an ETA is not available.
+
+### `.rate():number`
+Gets the estimated progress speed (progress per second).
