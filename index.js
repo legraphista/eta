@@ -50,8 +50,6 @@ function makeEta(options/*::?: Options */) {
       timestamp = Date.now();
     }
 
-    if (progress === lastProgress) { return; }
-
     if (lastTimestamp === null || lastProgress === null) {
       lastProgress = progress
       lastTimestamp = timestamp
