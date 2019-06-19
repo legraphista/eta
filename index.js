@@ -6,6 +6,7 @@ type Options = {
   min?: number,
   historyTimeConstant?: number,
   autostart?: boolean,
+  ignoreSameProgress?: boolean,
 }
 */
 
@@ -25,6 +26,7 @@ function makeEta(options/*::?: Options */) {
   var max = def(options.max, 1);
   var min = def(options.min, 0);
   var autostart = def(options.autostart, true);
+  var ignoreSameProgress = def(options.ignoreSameProgress, false);
 
   var rate/*: number | null */ = null;
   var lastTimestamp/*: number | null */ = null;
@@ -51,10 +53,11 @@ function makeEta(options/*::?: Options */) {
     }
 
     if (lastTimestamp === timestamp) { return; }
+    if (ignoreSameProgress && lastProgress === progress) { return; }
 
     if (lastTimestamp === null || lastProgress === null) {
-      lastProgress = progress
-      lastTimestamp = timestamp
+      lastProgress = progress;
+      lastTimestamp = timestamp;
       return;
     }
 
@@ -65,8 +68,8 @@ function makeEta(options/*::?: Options */) {
     rate = rate === null
       ? currentRate
       : filter(rate, currentRate, deltaTimestamp);
-    lastProgress = progress
-    lastTimestamp = timestamp
+    lastProgress = progress;
+    lastTimestamp = timestamp;
   }
 
   function estimate(timestamp/*::?: number*/) {
