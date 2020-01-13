@@ -3,6 +3,7 @@
   "version": "3.0.1",
   "description": "Progressively determine the eta of a process out of the percentage reported.",
   "main": "index.js",
+  "types": "index.d.ts",
   "scripts": {
     "test": "node test"
   },
