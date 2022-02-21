@@ -6,7 +6,7 @@ interface MakeEtaOptions {
   ignoreSameProgress?: boolean,
 }
 
-interface ETAInstance {
+export interface ETAInstance {
   start(): void
 
   reset(): void
